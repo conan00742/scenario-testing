@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <group android:orderInCategory="3">
+        <item android:title="@string/broadcast"
+            android:id="@+id/mn_broadcast"
+            app:showAsAction="never"
+            android:orderInCategory="1"/>
+
+        <item android:title="@string/multicast"
+            android:id="@+id/mn_multicast"
+            app:showAsAction="never"
+            android:orderInCategory="2"/>
+
+        <item android:title="@string/unicast"
+            android:id="@+id/mn_unicast"
+            app:showAsAction="never"
+            android:orderInCategory="3"/>
+    </group>
+
+</menu>

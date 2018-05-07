@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Mesh</string>
+    <string name="start_hype">Start</string>
+    <string name="stop_hype">Stop</string>
+    <string name="broadcast">Broadcasting</string>
+    <string name="multicast">Multicasting</string>
+    <string name="unicast">Unicasting</string>
+    <string name="permission_rationale">Without this permission the app is unable to scan nearby devices. Are you sure you want to deny this permission?</string>
+    <string name="app_setting_permission">We give you another chance to do it yourself. All you need is touch on the switch in your app setting screen. Do you want to open app setting?</string>
+</resources>
