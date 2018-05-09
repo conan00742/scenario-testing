@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @BindView(R.id.main_toolbar)
     Toolbar mToolbar;
     @BindView(R.id.fragment_container)
-    FrameLayout mFragmentContainer;
+    RelativeLayout mFragmentContainer;
     @BindView(R.id.tv_headerDeviceName)
     TextView mDeviceName;
     @BindView(R.id.iv_status)
@@ -148,11 +149,11 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     }
 
     @Override
-    public void onHypeMessageFailedSending(MessageInfo messageInfo, final Instance instance, Error error) {
+    public void onHypeMessageFailedSending(MessageInfo messageInfo, final Instance instance, final Error error) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(mContext, "failed sending to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "failed sending to " + instance.getStringIdentifier() + " /// reason = " + error.getReason() + " /// description = " + error.getDescription(), Toast.LENGTH_SHORT).show();
             }
         });
     }

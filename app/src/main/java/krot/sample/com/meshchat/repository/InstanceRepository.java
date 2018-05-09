@@ -48,7 +48,7 @@ public class InstanceRepository {
 
     public boolean isInstanceExisted(Instance instance) {
         for (int i = 0; i < instanceList.size(); i++) {
-            if (instanceList.get(i).getStringIdentifier().equals(instance.getAppStringIdentifier())) {
+            if (instanceList.get(i).getStringIdentifier().equals(instance.getStringIdentifier())) {
                 return true;
             }
         }
