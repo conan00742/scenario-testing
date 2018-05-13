@@ -23,26 +23,26 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/tv_headerDeviceName"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_online" />
+        android:src="@drawable/ic_offline" />
 
 
     <TextView
         android:id="@+id/tv_stop"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:text="STOP"
         android:textColor="#ffffff"
+        android:gravity="center"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"/>
 
     <TextView
         android:id="@+id/tv_start"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:text="START"
         android:layout_toStartOf="@id/tv_stop"
-        android:layout_centerVertical="true"
+        android:gravity="center"
         android:layout_marginEnd="16dp"
         android:textColor="#ffffff"
         />

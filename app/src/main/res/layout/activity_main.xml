@@ -18,43 +18,26 @@
         android:layout_height="match_parent"
         android:layout_below="@id/main_toolbar">
 
-        <RelativeLayout
-            android:id="@+id/fragment_container"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:layout_marginBottom="78dp">
 
-            <LinearLayout
-                android:id="@+id/message_box_container"
+            <android.support.design.widget.TabLayout
+                android:id="@+id/main_tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="50dp"
+                app:tabMode="fixed"
+                app:tabGravity="center"/>
 
-                <EditText
-                    android:id="@+id/edt_message"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:hint="message..." />
-
-                <Button
-                    android:id="@+id/btn_send"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:text="send" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_message_content"
+            <android.support.v4.view.ViewPager
+                android:id="@+id/main_pager"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textSize="26sp" />
+                android:layout_height="match_parent"/>
 
-        </RelativeLayout>
+
+        </LinearLayout>
 
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/main_container"
