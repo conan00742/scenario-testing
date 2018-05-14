@@ -52,8 +52,6 @@ public class ImageFragment extends Fragment {
     @BindView(R.id.btn_pick_image)
     Button mBtnPickImage;
 
-    @BindView(R.id.imageToUpload)
-    ImageView imageToUpload;
 
     private MessageAdapter mMessageAdapter;
 
@@ -80,7 +78,6 @@ public class ImageFragment extends Fragment {
         mRvImageMessage.setAdapter(mMessageAdapter);
         mRvImageMessage.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mRvImageMessage.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-
     }
 
     @OnClick(R.id.btn_pick_image)
@@ -127,14 +124,20 @@ public class ImageFragment extends Fragment {
         return data;
     }
 
-    public void showImageToUpload(final byte[] imageByte) {
-        Log.i("TAG", imageToUpload.toString());
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Glide.with(ImageFragment.this).load(imageByte).into(imageToUpload);
-            }
-        });
+//    public void showImageToUpload(final byte[] imageByte) {
+//        Log.i("TAG", imageToUpload.toString());
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Glide.with(ImageFragment.this).load(imageByte).into(imageToUpload);
+//            }
+//        });
+//    }
+
+    public MessageAdapter getMessageAdapter() {
+        return mMessageAdapter;
     }
+
+
 
 }

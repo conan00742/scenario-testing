@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         setSupportActionBar(mToolbar);
         setupViewPager();
         setupTabsLayout();
-        imageToUpload = findViewById(R.id.imageToUpload);
 
         //check permission
         String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -202,9 +201,21 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         } else if (currentFragment instanceof ImageFragment) {
             Log.i("TAG", "ImageFragment");
             final ImageFragment imageFragment = (ImageFragment) currentFragment;
-            final byte[] data = message.getData();
-            Log.i("TAG", data.toString());
-            imageFragment.showImageToUpload(data);
+            UserMessage imageMsg = new UserMessage(message, PICTURE_MESSAGE, false);
+            HypeRepository.getRepository().addMessage(imageMsg);
+            imageFragment.getMessageAdapter().setMessageList(HypeRepository.getRepository().getMessageList());
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                    imageFragment.getMessageAdapter().notifyDataSetChanged();
+                }
+            });
+
+//            final byte[] data = message.getData();
+//            Log.i("TAG", data.toString());
+//            imageFragment.showImageToUpload(data);
 
 
         } else if (currentFragment instanceof VideoFragment) {
