@@ -157,6 +157,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     mLlImageRoot.setGravity(Gravity.START);
                 }
 
+
                 mGlideManager.load(currentMessage.getUserMessage().getMessage().getData()).into(mImgMsg);
             }
         }

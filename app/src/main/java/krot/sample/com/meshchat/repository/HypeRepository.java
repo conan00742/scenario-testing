@@ -1,13 +1,9 @@
 package krot.sample.com.meshchat.repository;
 
 import com.hypelabs.hype.Instance;
-import com.hypelabs.hype.Message;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import krot.sample.com.meshchat.model.DisplayedMessage;
 import krot.sample.com.meshchat.model.UserMessage;
@@ -21,14 +17,14 @@ public class HypeRepository {
     private static HypeRepository repository;
     private static List<Instance> instanceList;
     private static List<UserMessage> messageList;
-    private static List<DisplayedMessage> displayedMessageList;
-    private static Map<String, UserMessage> instanceMessageMap;
+    private static List<DisplayedMessage> plainTextMessageList;
+    private static List<DisplayedMessage> imageMessageList;
 
     private HypeRepository() {
         instanceList = new ArrayList<>();
         messageList = new ArrayList<>();
-        displayedMessageList = new ArrayList<>();
-        instanceMessageMap = new LinkedHashMap<>();
+        plainTextMessageList = new ArrayList<>();
+        imageMessageList = new ArrayList<>();
     }
 
 
@@ -49,12 +45,12 @@ public class HypeRepository {
         messageList.add(message);
     }
 
-    public void addDisplayedMessage(DisplayedMessage displayedMessage) {
-        displayedMessageList.add(displayedMessage);
+    public void addDisplayedPlainTextMsg(DisplayedMessage displayedMessage) {
+        plainTextMessageList.add(displayedMessage);
     }
 
-    public void putMessageFromInstance(String identifier, UserMessage message) {
-        instanceMessageMap.put(identifier, message);
+    public void addImageMsg(DisplayedMessage displayedImgMessage) {
+        imageMessageList.add(displayedImgMessage);
     }
 
     public void removeInstance(Instance instance) {
@@ -71,8 +67,12 @@ public class HypeRepository {
 
     public List<UserMessage> getMessageList() {return messageList;}
 
-    public List<DisplayedMessage> getDisplayedMessageList() {
-        return displayedMessageList;
+    public List<DisplayedMessage> getPlainTextMessageList() {
+        return plainTextMessageList;
+    }
+
+    public List<DisplayedMessage> getImageMessageList() {
+        return imageMessageList;
     }
 
 

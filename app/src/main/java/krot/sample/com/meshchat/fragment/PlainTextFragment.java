@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import krot.sample.com.meshchat.R;
 import krot.sample.com.meshchat.adapter.MessageAdapter;
+import krot.sample.com.meshchat.adapter.PlainTextAdapter;
 import krot.sample.com.meshchat.repository.HypeRepository;
 
 /**
@@ -40,11 +41,11 @@ public class PlainTextFragment extends Fragment {
     @BindView(R.id.btn_send)
     Button mBtnSend;
 
-    private MessageAdapter mMessageAdapter;
+    private PlainTextAdapter mPlainTextAdapter;
     private byte[] msgData;
 
-    public MessageAdapter getMessageAdapter() {
-        return mMessageAdapter;
+    public PlainTextAdapter getPlainTextAdapter() {
+        return mPlainTextAdapter;
     }
 
     public byte[] getMessageData() {
@@ -62,8 +63,8 @@ public class PlainTextFragment extends Fragment {
 
 
     private void setupMessageAdapter() {
-        mMessageAdapter = new MessageAdapter(getActivity(), Glide.with(this));
-        mRvTextMessage.setAdapter(mMessageAdapter);
+        mPlainTextAdapter = new PlainTextAdapter(getActivity());
+        mRvTextMessage.setAdapter(mPlainTextAdapter);
         mRvTextMessage.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mRvTextMessage.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
