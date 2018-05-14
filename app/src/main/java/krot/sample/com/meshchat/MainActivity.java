@@ -67,6 +67,7 @@ import krot.sample.com.meshchat.adapter.MessageAdapter;
 import krot.sample.com.meshchat.fragment.ImageFragment;
 import krot.sample.com.meshchat.fragment.PlainTextFragment;
 import krot.sample.com.meshchat.fragment.VideoFragment;
+import krot.sample.com.meshchat.model.DisplayedMessage;
 import krot.sample.com.meshchat.model.UserMessage;
 import krot.sample.com.meshchat.repository.HypeRepository;
 import krot.sample.com.meshchat.widget.CustomChatMessageImageView;
@@ -169,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mUnbinder.unbind();
         Log.i("WTF", "Hype.getState() = " + Hype.getState());
         stopHype();
     }
@@ -182,8 +182,9 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         if (currentFragment instanceof PlainTextFragment) {
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
             UserMessage plainTextMsg = new UserMessage(message, PLAIN_TEXT_MESSAGE, false);
-            HypeRepository.getRepository().addMessage(plainTextMsg);
-            plainTextFragment.getMessageAdapter().setMessageList(HypeRepository.getRepository().getMessageList());
+            DisplayedMessage displayedMessage = new DisplayedMessage(instance, plainTextMsg);
+            HypeRepository.getRepository().addDisplayedMessage(displayedMessage);
+            plainTextFragment.getMessageAdapter().setDisplayedMessageList(HypeRepository.getRepository().getDisplayedMessageList());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -197,12 +198,12 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
         }
 
-//        for (int i = 0; i < HypeRepository.getRepository().getInstanceList().size(); i++) {
-//            Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
-//            if (!TextUtils.equals(currentInstance.getStringIdentifier(), instance.getStringIdentifier())) {
-//                Hype.send(message.getData(), currentInstance);
-//            }
-//        }
+        for (int i = 0; i < HypeRepository.getRepository().getInstanceList().size(); i++) {
+            Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
+            if (!TextUtils.equals(currentInstance.getStringIdentifier(), instance.getStringIdentifier())) {
+                Hype.send(message.getData(), currentInstance);
+            }
+        }
     }
 
     @Override
@@ -221,8 +222,9 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         if (currentFragment instanceof PlainTextFragment) {
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
             UserMessage plainTextMsg = new UserMessage(new Message(messageInfo, plainTextFragment.getMessageData()), PLAIN_TEXT_MESSAGE, true);
-            HypeRepository.getRepository().addMessage(plainTextMsg);
-            plainTextFragment.getMessageAdapter().setMessageList(HypeRepository.getRepository().getMessageList());
+            DisplayedMessage plainTextDisplayMessage = new DisplayedMessage(Hype.getHostInstance(), plainTextMsg);
+            HypeRepository.getRepository().addDisplayedMessage(plainTextDisplayMessage);
+            plainTextFragment.getMessageAdapter().setDisplayedMessageList(HypeRepository.getRepository().getDisplayedMessageList());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

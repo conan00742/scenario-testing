@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.hypelabs.hype.Hype;
@@ -71,8 +72,13 @@ public class PlainTextFragment extends Fragment {
 
     @OnClick(R.id.btn_send)
     public void sendPlainTextMessage(View view) {
-        doSendMessage(mEdtMessage.getText().toString().trim());
-        mEdtMessage.setText(null);
+        if (HypeRepository.getRepository().getInstanceCount() > 0) {
+            doSendMessage(mEdtMessage.getText().toString().trim());
+            mEdtMessage.setText(null);
+        } else {
+            Toast.makeText(getActivity(), "No instance found, can't send.", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 

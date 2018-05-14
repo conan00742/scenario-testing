@@ -13,6 +13,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
+import com.hypelabs.hype.Hype;
+import com.hypelabs.hype.HypeService;
+import com.hypelabs.hype.Instance;
 import com.hypelabs.hype.Message;
 
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import krot.sample.com.meshchat.R;
+import krot.sample.com.meshchat.model.DisplayedMessage;
 import krot.sample.com.meshchat.model.UserMessage;
 
 /**
@@ -34,9 +38,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private Context mContext;
     private RequestManager mGlideManager;
-    private List<UserMessage> messageList;
+    private List<DisplayedMessage> messageList;
     private LayoutInflater mInflater;
-    private String messageType;
 
     public MessageAdapter(Context context, RequestManager glideManager) {
         this.mContext = context;
@@ -45,9 +48,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mInflater = LayoutInflater.from(context);
     }
 
-    public void setMessageList(List<UserMessage> messageList) {
+    public void setDisplayedMessageList(List<DisplayedMessage> messageList) {
         this.messageList = messageList;
     }
+
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -80,9 +84,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        UserMessage currentMessage = getMessageAt(position);
+        DisplayedMessage currentMessage = getMessageAt(position);
         if (currentMessage != null) {
-            if (TextUtils.equals(currentMessage.getMsgType(), "PLAIN_TEXT_TYPE")) {
+            if (TextUtils.equals(currentMessage.getUserMessage().getMsgType(), "PLAIN_TEXT_TYPE")) {
                 return PLAINTEXT;
             } else {
                 return IMAGE;
@@ -93,11 +97,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
-    }
 
-    private UserMessage getMessageAt(int position) {
+    private DisplayedMessage getMessageAt(int position) {
         return messageList != null ? messageList.get(position) : null;
     }
 
@@ -107,6 +108,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @BindView(R.id.root_text)
         LinearLayout mLlPlainTextRoot;
 
+        @BindView(R.id.tv_user)
+        TextView mTvUser;
+
         @BindView(R.id.tv_message)
         TextView mTvPlainTextMsg;
 
@@ -115,15 +119,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ButterKnife.bind(this, itemView);
         }
 
-        public void bindPlainTextData(UserMessage currentMessage) {
+        public void bindPlainTextData(DisplayedMessage currentMessage) {
             if (currentMessage != null) {
-                if (currentMessage.isFromSender()) {
-                    mTvPlainTextMsg.setGravity(Gravity.END);
+                if (currentMessage.getUserMessage().isFromSender()) {
+                    mTvUser.setText("> me(" + currentMessage.getInstance().getStringIdentifier() + "):");
+                    mLlPlainTextRoot.setGravity(Gravity.END);
                 } else {
-                    mTvPlainTextMsg.setGravity(Gravity.START);
+                    mTvUser.setText("> " + currentMessage.getInstance().getStringIdentifier() + ":");
+                    mLlPlainTextRoot.setGravity(Gravity.START);
                 }
 
-                mTvPlainTextMsg.setText(new String(currentMessage.getMessage().getData()));
+
+                mTvPlainTextMsg.setText(new String(currentMessage.getUserMessage().getMessage().getData()));
             }
         }
     }
@@ -142,15 +149,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ButterKnife.bind(this, itemView);
         }
 
-        public void bindImageData(UserMessage currentMessage) {
+        public void bindImageData(DisplayedMessage currentMessage) {
             if (currentMessage != null) {
-                if (currentMessage.isFromSender()) {
+                if (currentMessage.getUserMessage().isFromSender()) {
                     mLlImageRoot.setGravity(Gravity.END);
                 } else {
                     mLlImageRoot.setGravity(Gravity.START);
                 }
 
-                mGlideManager.load(currentMessage.getMessage().getData()).into(mImgMsg);
+                mGlideManager.load(currentMessage.getUserMessage().getMessage().getData()).into(mImgMsg);
             }
         }
     }
