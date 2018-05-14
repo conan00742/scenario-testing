@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.Image;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -103,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @BindView(R.id.main_pager)
     ViewPager mMainPager;
 
+
+    ImageView imageToUpload;
+
     private Context mContext;
     private Unbinder mUnbinder;
     private InstanceAdapter mAdapter;
@@ -130,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         setSupportActionBar(mToolbar);
         setupViewPager();
         setupTabsLayout();
+        imageToUpload = findViewById(R.id.imageToUpload);
 
         //check permission
         String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -179,7 +184,10 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     public void onHypeMessageReceived(Message message, final Instance instance) {
         //làm sao để detect message type là gì
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
+        Log.i("TAG", Boolean.toString(currentFragment instanceof ImageFragment));
+        Log.i("TAG", Integer.toString(mMainPager.getCurrentItem()));
         if (currentFragment instanceof PlainTextFragment) {
+            Log.i("TAG", "PlainTextFragment");
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
             UserMessage plainTextMsg = new UserMessage(message, PLAIN_TEXT_MESSAGE, false);
             HypeRepository.getRepository().addMessage(plainTextMsg);
@@ -192,9 +200,15 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 }
             });
         } else if (currentFragment instanceof ImageFragment) {
+            Log.i("TAG", "ImageFragment");
+            final ImageFragment imageFragment = (ImageFragment) currentFragment;
+            final byte[] data = message.getData();
+            Log.i("TAG", data.toString());
+            imageFragment.showImageToUpload(data);
+
 
         } else if (currentFragment instanceof VideoFragment) {
-
+            Log.i("TAG", "VideoFragment");
         }
 
 //        for (int i = 0; i < HypeRepository.getRepository().getInstanceList().size(); i++) {
@@ -219,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     public void onHypeMessageSent(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
+            Log.i("TAG", PLAIN_TEXT_MESSAGE);
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
             UserMessage plainTextMsg = new UserMessage(new Message(messageInfo, plainTextFragment.getMessageData()), PLAIN_TEXT_MESSAGE, true);
             HypeRepository.getRepository().addMessage(plainTextMsg);
@@ -231,9 +246,10 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 }
             });
         } else if (currentFragment instanceof ImageFragment) {
+            Log.i("TAG", "ImageFragment");
 
         } else if (currentFragment instanceof VideoFragment) {
-
+            Log.i("TAG", "VideoFragment");
         }
 
     }
