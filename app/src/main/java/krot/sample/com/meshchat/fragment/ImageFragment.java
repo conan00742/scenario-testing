@@ -138,6 +138,10 @@ public class ImageFragment extends Fragment {
         return mMessageAdapter;
     }
 
+    public byte[] getMessageData() {
+        return imageByte;
+    }
+
 
 
 }

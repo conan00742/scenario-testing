@@ -213,21 +213,10 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 }
             });
 
-//            final byte[] data = message.getData();
-//            Log.i("TAG", data.toString());
-//            imageFragment.showImageToUpload(data);
-
 
         } else if (currentFragment instanceof VideoFragment) {
             Log.i("TAG", "VideoFragment");
         }
-
-//        for (int i = 0; i < HypeRepository.getRepository().getInstanceList().size(); i++) {
-//            Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
-//            if (!TextUtils.equals(currentInstance.getStringIdentifier(), instance.getStringIdentifier())) {
-//                Hype.send(message.getData(), currentInstance);
-//            }
-//        }
     }
 
     @Override
@@ -258,7 +247,17 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             });
         } else if (currentFragment instanceof ImageFragment) {
             Log.i("TAG", "ImageFragment");
-
+            final ImageFragment imageFragment = (ImageFragment) currentFragment;
+            UserMessage imageMsg = new UserMessage(new Message(messageInfo, imageFragment.getMessageData()), PICTURE_MESSAGE, true);
+            HypeRepository.getRepository().addMessage(imageMsg);
+            imageFragment.getMessageAdapter().setMessageList(HypeRepository.getRepository().getMessageList());
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                    imageFragment.getMessageAdapter().notifyDataSetChanged();
+                }
+            });
         } else if (currentFragment instanceof VideoFragment) {
             Log.i("TAG", "VideoFragment");
         }
