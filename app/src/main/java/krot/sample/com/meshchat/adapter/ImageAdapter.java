@@ -95,7 +95,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         public void bindData(DisplayedMessage currentItem) {
             if (currentItem != null) {
                 if (currentItem.getUserMessage().isFromSender()) {
-                    setCurrentImageByte(currentItem.getUserMessage().getMessage().getData());
                     Log.i("TAG", "FROM SENDER");
                     mTvUser.setText("> me(" + currentItem.getInstance().getStringIdentifier() + "):");
                     mLlImageRoot.setGravity(Gravity.END);
