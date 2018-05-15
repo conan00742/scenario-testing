@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     private byte[] msgData;
     private String msgType = PLAIN_TEXT_MESSAGE;
     private CustomPagerAdapter adapter;
+    private List<byte[]> imageByteList = new ArrayList<>();
 
 
     @Override
@@ -178,9 +179,11 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @Override
     public void onHypeMessageReceived(Message message, final Instance instance) {
         //làm sao để detect message type là gì
+        Log.i("TAG", "onHypeMessageReceived");
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
+
             UserMessage plainTextMsg = new UserMessage(message, PLAIN_TEXT_MESSAGE, false);
             DisplayedMessage displayedMessage = new DisplayedMessage(instance, plainTextMsg);
             HypeRepository.getRepository().addDisplayedPlainTextMsg(displayedMessage);
@@ -193,6 +196,22 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 }
             });
         } else if (currentFragment instanceof ImageFragment) {
+            Log.i("TAG", "ImageFragment");
+            final ImageFragment imageFragment = (ImageFragment) currentFragment;
+
+            UserMessage imageMsg = new UserMessage(message, PICTURE_MESSAGE, false);
+            DisplayedMessage displayedMessage = new DisplayedMessage(instance, imageMsg);
+            HypeRepository.getRepository().addImageMsg(displayedMessage);
+            imageFragment.getImageAdapter().setDisplayedMessageList(HypeRepository.getRepository().getImageMessageList());
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                    imageFragment.getImageAdapter().notifyDataSetChanged();
+//                    imageFragment.showImage();
+                }
+            });
 
         } else if (currentFragment instanceof VideoFragment) {
 
@@ -218,7 +237,9 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeMessageSent(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
+        Log.i("TAG", "onHypeMessageSent");
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
+        Log.i("TAG", Integer.toString(mMainPager.getCurrentItem()));
         if (currentFragment instanceof PlainTextFragment) {
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
             UserMessage plainTextMsg = new UserMessage(new Message(messageInfo, plainTextFragment.getMessageData()), PLAIN_TEXT_MESSAGE, true);
@@ -233,7 +254,43 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 }
             });
         } else if (currentFragment instanceof ImageFragment) {
+            Log.i("TAG", "ImageFragment");
 
+            final ImageFragment imageFragment = (ImageFragment) currentFragment;
+//            Log.i("TAG", imageFragment.getMessageData().toString());
+            UserMessage imageMsg = new UserMessage(new Message(messageInfo, imageFragment.getMessageData()), PICTURE_MESSAGE, true);
+            DisplayedMessage imageDisplayMessage = new DisplayedMessage(Hype.getHostInstance(), imageMsg);
+            HypeRepository.getRepository().addImageMsg(imageDisplayMessage);
+            Log.i("TAG", imageDisplayMessage.getUserMessage().getMessage().getData().toString());
+            Log.i("TAG", Integer.toString(imageByteList.size()));
+            while(imageByteList.size() <= 0) {
+                imageByteList.add(imageDisplayMessage.getUserMessage().getMessage().getData());
+                this.setImageByteList(imageByteList);
+                imageFragment.getImageAdapter().setDisplayedMessageList(HypeRepository.getRepository().getImageMessageList());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                        imageFragment.getImageAdapter().notifyDataSetChanged();
+                    }
+                });
+                return;
+            }
+            imageByteList.add(imageDisplayMessage.getUserMessage().getMessage().getData());
+            for(byte[] imageByte : imageByteList) {
+                if(imageByte.equals(imageDisplayMessage.getUserMessage().getMessage().getData())) {
+                    return;
+                }
+            }
+            Log.i("TAG", "PASSSSSSSSSSSSSSSSSSSSSSSSs");
+            imageFragment.getImageAdapter().setDisplayedMessageList(HypeRepository.getRepository().getImageMessageList());
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                    imageFragment.getImageAdapter().notifyDataSetChanged();
+                }
+            });
         } else if (currentFragment instanceof VideoFragment) {
 
         }
@@ -242,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeMessageDelivered(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
+        Log.i("TAG", "onHypeMessageDelivered");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -641,6 +699,10 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 }
             });
         }
+    }
+
+    public void setImageByteList (List<byte[]> imageByteList) {
+        this.imageByteList = imageByteList;
     }
 
 
