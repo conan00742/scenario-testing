@@ -21,47 +21,46 @@ import butterknife.ButterKnife;
 import krot.sample.com.meshchat.R;
 import krot.sample.com.meshchat.model.DisplayedMessage;
 
+
 /**
- * Created by Krot on 5/15/18.
+ * Created by jake on 14/05/2018.
  */
 
-public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageMessageViewHolder> {
-
+public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
+    private List<DisplayedMessage> displayedMessageList;
     private LayoutInflater mInflater;
-    private List<DisplayedMessage> imageMessageList;
-    private Context context;
 
     public ImageAdapter(Context context) {
-        this.context = context;
-        imageMessageList = new ArrayList<>();
+        displayedMessageList = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
     }
 
-    public void setImageMessageList(List<DisplayedMessage> imageMessageList) {
-        this.imageMessageList = imageMessageList;
+
+    public void setDisplayedMessageList(List<DisplayedMessage> displayedMessageList) {
+        this.displayedMessageList = displayedMessageList;
     }
 
     @Override
-    public ImageMessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.image_item, parent, false);
-        return new ImageMessageViewHolder(view, context);
+        return new ImageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ImageMessageViewHolder holder, int position) {
-        holder.bindImageMessage(getMessageAt(position));
+    public void onBindViewHolder(ImageViewHolder holder, int position) {
+        holder.bindData(getItemAt(position));
     }
 
-    private DisplayedMessage getMessageAt(int pos) {
-        return imageMessageList != null ? imageMessageList.get(pos) : null;
+    private DisplayedMessage getItemAt(int pos) {
+        return displayedMessageList != null ? displayedMessageList.get(pos) : null;
     }
 
     @Override
     public int getItemCount() {
-        return imageMessageList != null ? imageMessageList.size() : 0;
+        return displayedMessageList != null ? displayedMessageList.size() : 0;
     }
 
-    class ImageMessageViewHolder extends RecyclerView.ViewHolder {
+    class ImageViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.root_img)
         LinearLayout mLlImageRoot;
@@ -70,28 +69,31 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageMessage
         TextView mTvUser;
 
         @BindView(R.id.iv_message)
-        ImageView mImgMsg;
+        ImageView mTvImageMsg;
 
-        private Context mContext;
 
-        public ImageMessageViewHolder(View itemView, Context context) {
+
+        public ImageViewHolder(View itemView) {
             super(itemView);
-            mContext = context;
             ButterKnife.bind(this, itemView);
         }
 
-        public void bindImageMessage(DisplayedMessage currentMessage) {
-            if (currentMessage != null) {
-                if (currentMessage.getUserMessage().isFromSender()) {
-                    mTvUser.setText("> me (" + currentMessage.getInstance().getStringIdentifier() + "):");
+        public void bindData(DisplayedMessage currentItem) {
+            if (currentItem != null) {
+                if (currentItem.getUserMessage().isFromSender()) {
+                    mTvUser.setText("> me(" + currentItem.getInstance().getStringIdentifier() + "):");
                     mLlImageRoot.setGravity(Gravity.END);
+
                 } else {
-                    mTvUser.setText("> " + currentMessage.getInstance().getStringIdentifier() + ":");
+                    mTvUser.setText("> " + currentItem.getInstance().getStringIdentifier() + ":");
                     mLlImageRoot.setGravity(Gravity.START);
+
                 }
 
-                Glide.with(mContext).load(currentMessage.getUserMessage().getMessage().getData()).apply(new RequestOptions().centerCrop()).into(mImgMsg);
+                Glide.with(mInflater.getContext()).load(currentItem.getUserMessage().getMessage().getData()).into(mTvImageMsg);
+
             }
         }
     }
+
 }

@@ -1,7 +1,10 @@
 package krot.sample.com.meshchat.fragment;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,6 +28,7 @@ import com.hypelabs.hype.Instance;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +50,7 @@ import static krot.sample.com.meshchat.MainActivity.PICTURE_MESSAGE;
  */
 
 public class ImageFragment extends Fragment {
+    private static final int RESULT_LOAD_IMAGE = 1;
 
     private final int PICK_FILE_REQUEST_CODE = 405;
 
@@ -55,21 +60,22 @@ public class ImageFragment extends Fragment {
     @BindView(R.id.btn_pick_image)
     Button mBtnPickImage;
 
-    private ImageAdapter imageAdapter;
+    private ImageAdapter mMessageAdapter;
     private byte[] msgData;
+
+    public ImageAdapter getImageAdapter() {
+        return mMessageAdapter;
+    }
+
+    public byte[] getMessageData() {
+        return msgData;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-    public ImageAdapter getImageAdapter() {
-        return imageAdapter;
-    }
-
-    public byte[] getImageMsgData() {
-        return msgData;
-    }
 
     @Nullable
     @Override
@@ -81,8 +87,8 @@ public class ImageFragment extends Fragment {
     }
 
     private void setupMessageAdapter() {
-        imageAdapter = new ImageAdapter(getActivity());
-        mRvImageMessage.setAdapter(imageAdapter);
+        mMessageAdapter = new ImageAdapter(getActivity());
+        mRvImageMessage.setAdapter(mMessageAdapter);
         mRvImageMessage.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mRvImageMessage.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
@@ -90,55 +96,23 @@ public class ImageFragment extends Fragment {
 
 
     @OnClick(R.id.btn_pick_image)
-    public void pickAndSendImageMessage(View v) {
+    public void sendPickImage(View view) {
         if (HypeRepository.getRepository().getInstanceCount() > 0) {
-            Intent chooseImageIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            chooseImageIntent.setType("image/*");
-            startActivityForResult(Intent.createChooser(chooseImageIntent, "Choose an app below: "), PICK_FILE_REQUEST_CODE);
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, RESULT_LOAD_IMAGE);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_FILE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-                Uri filePath = data.getData();
-                Log.i("WTF", "data = " + data.getData());
-                String messageType = "";
-
-                if (filePath != null) {
-
-                    String filePathInString = filePath.toString();
-                    Log.i("WTF", "filePathInString = " + filePathInString);
-                    if (filePathInString.contains("image")) {
-                        messageType = PICTURE_MESSAGE;
-                    }
-
-                    Log.i("WTF", "scheme = " + filePath.getScheme());
-                    String fileName = filePath.getLastPathSegment();
-
-
-                    if (messageType.equals(PICTURE_MESSAGE)) {
-                        try {
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(HypeApplication.getAppContext().getContentResolver(), filePath);
-
-                            //rotate if needed
-                            Bitmap newBitmapImg = ImageUtils.rotateImageIfRequired(bitmap, HypeApplication.getAppContext(), filePath);
-                            int imageWidth = newBitmapImg.getWidth();
-                            int imageHeight = newBitmapImg.getHeight();
-
-
-                            //show dialog
-                            createImageSettingDialog(newBitmapImg, fileName, filePath, imageWidth, imageHeight);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }
-
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+            byte[] imageByte = convertImageToByte(selectedImage);
+            msgData = imageByte;
+            for (int i = 0; i < HypeRepository.getRepository().getInstanceList().size(); i++) {
+                Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
+                Hype.send(imageByte, currentInstance);
             }
         }
     }
@@ -192,4 +166,21 @@ public class ImageFragment extends Fragment {
             Hype.send(msgData, currentInstance);
         }
     }
+
+
+    public byte[] convertImageToByte(Uri uri){
+        byte[] data = null;
+        try {
+            ContentResolver cr = getActivity().getBaseContext().getContentResolver();
+            InputStream inputStream = cr.openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            data = baos.toByteArray();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
 }
