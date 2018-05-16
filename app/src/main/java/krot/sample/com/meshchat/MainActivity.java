@@ -208,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 public void run() {
                     Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
                     imageFragment.getImageAdapter().notifyDataSetChanged();
-//                    imageFragment.showImage();
                 }
             });
 
