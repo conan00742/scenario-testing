@@ -30,16 +30,12 @@ import krot.sample.com.meshchat.model.DisplayedMessage;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     private List<DisplayedMessage> displayedMessageList;
     private LayoutInflater mInflater;
-    private byte[] imageByte;
 
     public ImageAdapter(Context context) {
         displayedMessageList = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
     }
 
-    public ImageAdapter() {
-
-    }
 
     public void setDisplayedMessageList(List<DisplayedMessage> displayedMessageList) {
         this.displayedMessageList = displayedMessageList;
@@ -67,7 +63,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     class ImageViewHolder extends RecyclerView.ViewHolder {
 
-        private byte[] currentImageByte;
 
         @BindView(R.id.root_img)
         LinearLayout mLlImageRoot;
@@ -78,13 +73,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         @BindView(R.id.iv_message)
         ImageView mTvImageMsg;
 
-        public byte[] getCurrentImageByte() {
-            return this.currentImageByte;
-        }
-
-        public void setCurrentImageByte(byte[] currentImageByte) {
-            this.currentImageByte = currentImageByte;
-        }
 
 
         public ImageViewHolder(View itemView) {
@@ -95,25 +83,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         public void bindData(DisplayedMessage currentItem) {
             if (currentItem != null) {
                 if (currentItem.getUserMessage().isFromSender()) {
-                    Log.i("TAG", "FROM SENDER");
                     mTvUser.setText("> me(" + currentItem.getInstance().getStringIdentifier() + "):");
                     mLlImageRoot.setGravity(Gravity.END);
 
                 } else {
-                    Log.i("TAG", "NOT FROM SENDER");
                     mTvUser.setText("> " + currentItem.getInstance().getStringIdentifier() + ":");
                     mLlImageRoot.setGravity(Gravity.START);
 
                 }
 
-                Log.i("TAG", "bindDataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                 Glide.with(mInflater.getContext()).load(currentItem.getUserMessage().getMessage().getData()).into(mTvImageMsg);
-//                mTvImageMsg.setText(new String(currentItem.getUserMessage().getMessage().getData()));
-//                Log.i("TAG", currentItem.getUserMessage().getMessage().getData().toString());
-//                Log.i("TAG", currentItem.getUserMessage().getMessage().getMessageInfo().toString());
-//                Glide.with(mInflater.getContext()).load(currentItem.getUserMessage().getMessage().getData()).into(mTvImageMsg);
-//                imageByte = currentItem.getUserMessage().getMessage().getData();
-//                setImageByte(currentItem.getUserMessage().getMessage().getData());
 
             }
         }

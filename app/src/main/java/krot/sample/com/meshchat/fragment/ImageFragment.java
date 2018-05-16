@@ -64,10 +64,6 @@ public class ImageFragment extends Fragment {
         return msgData;
     }
 
-    public void setMessageData(byte[] msgData) {
-        this.msgData = msgData;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,9 +88,10 @@ public class ImageFragment extends Fragment {
 
     @OnClick(R.id.btn_pick_image)
     public void sendPickImage(View view) {
-        Log.i("TAG", "sendPickImage");
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, RESULT_LOAD_IMAGE);
+        if (HypeRepository.getRepository().getInstanceCount() > 0) {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, RESULT_LOAD_IMAGE);
+        }
     }
 
     @Override
@@ -103,13 +100,8 @@ public class ImageFragment extends Fragment {
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
             byte[] imageByte = convertImageToByte(selectedImage);
-
-//            setMessageData(imageByte);
-            Log.i("TAG", "onActivityResult");
             msgData = imageByte;
-            Log.i("TAG", Integer.toString(HypeRepository.getRepository().getInstanceList().size()));
             for (int i = 0; i < HypeRepository.getRepository().getInstanceList().size(); i++) {
-                Log.i("TAG", "sendImageeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeees");
                 Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
                 Hype.send(imageByte, currentInstance);
             }
@@ -131,10 +123,4 @@ public class ImageFragment extends Fragment {
         return data;
     }
 
-//    @BindView(R.id.iv_message)
-//    ImageView mTvImageMsg;
-
-//    public void showImage() {
-//        Glide.with(ImageFragment.this).load(mMessageAdapter.getImageByte()).into(mTvImageMsg);
-//    }
 }

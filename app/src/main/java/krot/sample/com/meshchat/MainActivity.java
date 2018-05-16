@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             //do something else
             setupAdapter();
             Hype.setContext(mContext);
-            Hype.setAppIdentifier("b7b4de84");
+            Hype.setAppIdentifier("8ecac7e8");
         }
     }
 
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     public void onHypeMessageSent(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
-            if(v == 1) {
+            if(v == 1.0) {
                 final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
                 UserMessage plainTextMsg = new UserMessage(new Message(messageInfo, plainTextFragment.getMessageData()), PLAIN_TEXT_MESSAGE, true);
                 DisplayedMessage plainTextDisplayMessage = new DisplayedMessage(Hype.getHostInstance(), plainTextMsg);
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             }
         } else if (currentFragment instanceof ImageFragment) {
             Log.i("TAG", "ImageFragment");
-            if(v == 1) {
+            if(v == 1.0) {
                 final ImageFragment imageFragment = (ImageFragment) currentFragment;
                 UserMessage imageMsg = new UserMessage(new Message(messageInfo, imageFragment.getMessageData()), PICTURE_MESSAGE, true);
                 DisplayedMessage imageDisplayMessage = new DisplayedMessage(Hype.getHostInstance(), imageMsg);
@@ -411,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @Override
     public String onHypeRequestAccessToken(int i) {
         Log.i("WTF", "onHypeRequestAccessToken: token = " + i);
-        return "e42764d41f12bfcb";
+        return "e8f5db56674256537f18c62f9846f7";
     }
 
 
@@ -437,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         setupAdapter();
                         Hype.setContext(mContext);
-                        Hype.setAppIdentifier("f0441ff3");
+                        Hype.setAppIdentifier("8ecac7e8");
                         Log.i("WTF", "PERMISSION GRANTED: Hype.getState() = " + Hype.getState());
                     } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                         boolean shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION);
