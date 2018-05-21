@@ -19,12 +19,15 @@ public class HypeRepository {
     private static List<UserMessage> messageList;
     private static List<DisplayedMessage> plainTextMessageList;
     private static List<DisplayedMessage> imageMessageList;
+    private static List<DisplayedMessage> videoMessageList;
 
     private HypeRepository() {
         instanceList = new ArrayList<>();
         messageList = new ArrayList<>();
         plainTextMessageList = new ArrayList<>();
         imageMessageList = new ArrayList<>();
+        videoMessageList = new ArrayList<>();
+
     }
 
 
@@ -53,6 +56,10 @@ public class HypeRepository {
         imageMessageList.add(displayedImgMessage);
     }
 
+    public void addVideoMsg(DisplayedMessage displayedMessage) {
+        videoMessageList.add(displayedMessage);
+    }
+
     public void removeInstance(Instance instance) {
         instanceList.remove(instance);
     }
@@ -73,6 +80,10 @@ public class HypeRepository {
 
     public List<DisplayedMessage> getImageMessageList() {
         return imageMessageList;
+    }
+
+    public List<DisplayedMessage> getVideoMessageList() {
+        return videoMessageList;
     }
 
 

@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @Override
     public void onHypeMessageReceived(Message message, final Instance instance) {
         //làm sao để detect message type là gì
-        Log.i("TAG", "onHypeMessageReceived");
+        Log.i("TAG", "onHypeMessageReceivedddddddddddddddddddddddddddddddddddddddddddddddddddd");
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
@@ -212,6 +213,21 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             });
 
         } else if (currentFragment instanceof VideoFragment) {
+            Log.i("TAG", "currentFragment");
+            final VideoFragment videoFragment = (VideoFragment) currentFragment;
+
+            UserMessage videoMsg = new UserMessage(message, VIDEO_MESSAGE, false);
+            DisplayedMessage displayedMessage = new DisplayedMessage(instance, videoMsg);
+            HypeRepository.getRepository().addVideoMsg(displayedMessage);
+            videoFragment.getVideoAdapter().setDisplayedMessageList(HypeRepository.getRepository().getVideoMessageList());
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                    videoFragment.getVideoAdapter().notifyDataSetChanged();
+                }
+            });
 
         }
 
@@ -235,6 +251,8 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeMessageSent(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
+        Log.i("TAG", "onHypeMessageSent");
+        Log.i("TAG", Float.toString(v));
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
             if(v == 1.0) {
@@ -271,7 +289,22 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             Log.i("TAG", "PASSSSSSSSSSSSSSSSSSSSSSSSs");
 
         } else if (currentFragment instanceof VideoFragment) {
+            Log.i("TAG", "VideoFragment");
+            if(v == 1.0) {
+                final VideoFragment videoFragment = (VideoFragment) currentFragment;
+                UserMessage videoMsg = new UserMessage(new Message(messageInfo, videoFragment.getMessageData()), VIDEO_MESSAGE, true);
+                DisplayedMessage videoDisplayMessage = new DisplayedMessage(Hype.getHostInstance(), videoMsg);
+                HypeRepository.getRepository().addImageMsg(videoDisplayMessage);
+                videoFragment.getVideoAdapter().setDisplayedMessageList(HypeRepository.getRepository().getImageMessageList());
 
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                        videoFragment.getVideoAdapter().notifyDataSetChanged();
+                    }
+                });
+            }
         }
 
     }
