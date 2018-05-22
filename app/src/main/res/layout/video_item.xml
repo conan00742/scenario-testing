@@ -11,16 +11,16 @@
         android:id="@+id/tv_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
         android:textSize="16sp"
-        tools:text=">> from Krot:"/>
+        android:textStyle="bold"
+        tools:text=">> from Krot:" />
 
 
     <krot.sample.com.meshchat.widget.CustomVideoView
         android:id="@+id/cvv_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"/>
+        android:layout_marginTop="5dp" />
 
 
 </LinearLayout>

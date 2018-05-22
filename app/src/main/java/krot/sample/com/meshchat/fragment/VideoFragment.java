@@ -16,8 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import com.bumptech.glide.Glide;
+import android.widget.MediaController;
+import android.widget.TextView;
 import com.hypelabs.hype.Hype;
 import com.hypelabs.hype.Instance;
 
@@ -25,13 +25,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import krot.sample.com.meshchat.R;
-import krot.sample.com.meshchat.adapter.MessageAdapter;
 import krot.sample.com.meshchat.adapter.VideoAdapter;
 import krot.sample.com.meshchat.repository.HypeRepository;
 
@@ -56,9 +54,11 @@ public class VideoFragment extends Fragment {
     private Uri videoUri;
     private String videoPath;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     public byte[] getMessageData() {
@@ -165,7 +165,6 @@ public class VideoFragment extends Fragment {
 //        return byteBuffer.toByteArray();
 
 
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         FileInputStream fis;
         try {
@@ -184,4 +183,7 @@ public class VideoFragment extends Fragment {
 
         return bbytes;
     }
+
+
+
 }

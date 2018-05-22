@@ -6,12 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,22 +19,18 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.hypelabs.hype.Error;
 import com.hypelabs.hype.Hype;
 import com.hypelabs.hype.Instance;
@@ -48,14 +41,9 @@ import com.hypelabs.hype.NetworkObserver;
 import com.hypelabs.hype.State;
 import com.hypelabs.hype.StateObserver;
 
-import org.greenrobot.eventbus.EventBus;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,9 +58,6 @@ import krot.sample.com.meshchat.fragment.VideoFragment;
 import krot.sample.com.meshchat.model.DisplayedMessage;
 import krot.sample.com.meshchat.model.UserMessage;
 import krot.sample.com.meshchat.repository.HypeRepository;
-import krot.sample.com.meshchat.widget.CustomChatMessageImageView;
-import krot.sample.com.meshchat.widget.EventReceiveMessage;
-import krot.sample.com.meshchat.widget.EventSendMessage;
 
 public class MainActivity extends AppCompatActivity implements StateObserver, NetworkObserver, MessageObserver {
 
@@ -177,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     //MESSAGE OBSERVER
     @Override
     public void onHypeMessageReceived(Message message, final Instance instance) {
+        //làm sao để detect message type là gì
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
@@ -245,6 +231,8 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeMessageSent(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
+        Log.i("TAG", "onHypeMessageSent");
+        Log.i("TAG", Float.toString(v));
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
             if (v == 1.0) {
