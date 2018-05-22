@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             //do something else
             setupAdapter();
             Hype.setContext(mContext);
-            Hype.setAppIdentifier("8ecac7e8");
+            Hype.setAppIdentifier("f0e3f9c5");
         }
     }
 
@@ -177,8 +177,6 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     //MESSAGE OBSERVER
     @Override
     public void onHypeMessageReceived(Message message, final Instance instance) {
-        //làm sao để detect message type là gì
-        Log.i("TAG", "onHypeMessageReceived");
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
             final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
@@ -190,12 +188,11 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "receive from " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
                     plainTextFragment.getPlainTextAdapter().notifyDataSetChanged();
                 }
             });
         } else if (currentFragment instanceof ImageFragment) {
-            Log.i("TAG", "ImageFragment");
             final ImageFragment imageFragment = (ImageFragment) currentFragment;
 
             UserMessage imageMsg = new UserMessage(message, PICTURE_MESSAGE, false);
@@ -206,13 +203,26 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "receive from " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
                     imageFragment.getImageAdapter().notifyDataSetChanged();
                 }
             });
 
         } else if (currentFragment instanceof VideoFragment) {
-
+            Log.i("WTF", "Received Video");
+            final VideoFragment videoFragment = (VideoFragment) currentFragment;
+            UserMessage videoMsg = new UserMessage(message, VIDEO_MESSAGE, false);
+            videoMsg.setVideoPath(Utils.saveFile(message.getData()));
+            DisplayedMessage videoDisplayedMessage = new DisplayedMessage(Hype.getHostInstance(), videoMsg);
+            HypeRepository.getRepository().addVideoMsg(videoDisplayedMessage);
+            videoFragment.getVideoAdapter().setDisplayedMessageList(HypeRepository.getRepository().getVideoMessageList());
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "receive from " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                    videoFragment.getVideoAdapter().notifyDataSetChanged();
+                }
+            });
         }
 
         for (int i = 0; i < HypeRepository.getRepository().getInstanceList().size(); i++) {
@@ -237,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     public void onHypeMessageSent(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
-            if(v == 1.0) {
+            if (v == 1.0) {
                 final PlainTextFragment plainTextFragment = (PlainTextFragment) currentFragment;
                 UserMessage plainTextMsg = new UserMessage(new Message(messageInfo, plainTextFragment.getMessageData()), PLAIN_TEXT_MESSAGE, true);
                 DisplayedMessage plainTextDisplayMessage = new DisplayedMessage(Hype.getHostInstance(), plainTextMsg);
@@ -252,8 +262,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 });
             }
         } else if (currentFragment instanceof ImageFragment) {
-            Log.i("TAG", "ImageFragment");
-            if(v == 1.0) {
+            if (v == 1.0) {
                 final ImageFragment imageFragment = (ImageFragment) currentFragment;
                 UserMessage imageMsg = new UserMessage(new Message(messageInfo, imageFragment.getMessageData()), PICTURE_MESSAGE, true);
                 DisplayedMessage imageDisplayMessage = new DisplayedMessage(Hype.getHostInstance(), imageMsg);
@@ -268,10 +277,23 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                 });
             }
 
-            Log.i("TAG", "PASSSSSSSSSSSSSSSSSSSSSSSSs");
-
         } else if (currentFragment instanceof VideoFragment) {
-
+            Log.i("WTF", "sent " + v);
+            if (v == 1.0) {
+                final VideoFragment videoFragment = (VideoFragment) currentFragment;
+                UserMessage videoMsg = new UserMessage(new Message(messageInfo, videoFragment.getMessageData()), VIDEO_MESSAGE, true);
+                videoMsg.setVideoPath(videoFragment.getVideoPath());
+                DisplayedMessage videoDisplayMessage = new DisplayedMessage(Hype.getHostInstance(), videoMsg);
+                HypeRepository.getRepository().addVideoMsg(videoDisplayMessage);
+                videoFragment.getVideoAdapter().setDisplayedMessageList(HypeRepository.getRepository().getVideoMessageList());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "sent to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                        videoFragment.getVideoAdapter().notifyDataSetChanged();
+                    }
+                });
+            }
         }
 
     }
@@ -409,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @Override
     public String onHypeRequestAccessToken(int i) {
         Log.i("WTF", "onHypeRequestAccessToken: token = " + i);
-        return "e8f5db56674256537f18c62f9846f7";
+        return "558cc6d448bd5c647fea181813b636";
     }
 
 
@@ -435,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         setupAdapter();
                         Hype.setContext(mContext);
-                        Hype.setAppIdentifier("8ecac7e8");
+                        Hype.setAppIdentifier("f0e3f9c5");
                         Log.i("WTF", "PERMISSION GRANTED: Hype.getState() = " + Hype.getState());
                     } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                         boolean shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -662,25 +684,8 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         adapter = new CustomPagerAdapter(fragmentList, getSupportFragmentManager());
         if (mMainPager != null) {
             mMainPager.setAdapter(adapter);
-            mMainPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    Log.i("WTF", "currentFragment = " + adapter.getFragmentList().get(position));
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                }
-            });
         }
     }
-
 
 
 }

@@ -16,15 +16,15 @@ public class HypeRepository {
 
     private static HypeRepository repository;
     private static List<Instance> instanceList;
-    private static List<UserMessage> messageList;
     private static List<DisplayedMessage> plainTextMessageList;
     private static List<DisplayedMessage> imageMessageList;
+    private static List<DisplayedMessage> videoMessageList;
 
     private HypeRepository() {
         instanceList = new ArrayList<>();
-        messageList = new ArrayList<>();
         plainTextMessageList = new ArrayList<>();
         imageMessageList = new ArrayList<>();
+        videoMessageList = new ArrayList<>();
     }
 
 
@@ -41,10 +41,6 @@ public class HypeRepository {
         instanceList.add(instance);
     }
 
-    public void addMessage(UserMessage message) {
-        messageList.add(message);
-    }
-
     public void addDisplayedPlainTextMsg(DisplayedMessage displayedMessage) {
         plainTextMessageList.add(displayedMessage);
     }
@@ -53,19 +49,19 @@ public class HypeRepository {
         imageMessageList.add(displayedImgMessage);
     }
 
+    public void addVideoMsg(DisplayedMessage displayedMessage) {
+        videoMessageList.add(displayedMessage);
+    }
+
     public void removeInstance(Instance instance) {
         instanceList.remove(instance);
     }
 
-    public void removeMessage(UserMessage message) {
-        messageList.remove(message);
-    }
 
     public List<Instance> getInstanceList() {
         return instanceList;
     }
 
-    public List<UserMessage> getMessageList() {return messageList;}
 
     public List<DisplayedMessage> getPlainTextMessageList() {
         return plainTextMessageList;
@@ -74,6 +70,8 @@ public class HypeRepository {
     public List<DisplayedMessage> getImageMessageList() {
         return imageMessageList;
     }
+
+    public List<DisplayedMessage> getVideoMessageList() { return videoMessageList;}
 
 
     public boolean isEmpty() {
@@ -100,8 +98,5 @@ public class HypeRepository {
         return instanceList != null ? instanceList.size() : 0;
     }
 
-    public int getMessageCount() {
-        return messageList != null ? messageList.size() : 0;
-    }
 
 }
