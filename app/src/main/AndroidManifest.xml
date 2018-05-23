@@ -15,6 +15,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
     <application
@@ -35,7 +37,10 @@
 
         <meta-data
             android:name="com.hypelabs.hype.realm"
-            android:value="f0e3f9c5"/>
+            android:value="f0441ff3"/>
+
+        <meta-data android:name="fr.maxcom.libmedia.apiKey"
+            android:value="K8ks510aaKcx9LXS7wmStoPxLzGEOnZt/VWY8uhdUAtxB70gbProG2bDFxFTJmxxtzdvpBVN5l7xzLVppwiEeFsFOM1bLMXNpilqTOMoZFW9N2AWrjRoFqA+dlCuM2RM" />
     </application>
 
 </manifest>

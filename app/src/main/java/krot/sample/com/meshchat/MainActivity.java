@@ -23,6 +23,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +41,7 @@ import com.hypelabs.hype.MessageObserver;
 import com.hypelabs.hype.NetworkObserver;
 import com.hypelabs.hype.State;
 import com.hypelabs.hype.StateObserver;
+import com.hypelabs.hype.TransportType;
 
 
 import java.util.ArrayList;
@@ -125,7 +127,8 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             //do something else
             setupAdapter();
             Hype.setContext(mContext);
-            Hype.setAppIdentifier("f0e3f9c5");
+            Hype.setTransportType(TransportType.BLUETOOTH_CLASSIC|TransportType.BLUETOOTH_LOW_ENERGY|TransportType.WIFI_DIRECT|TransportType.WIFI_INFRA);
+            Hype.setAppIdentifier("f0441ff3");
         }
     }
 
@@ -198,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             Log.i("WTF", "Received Video");
             final VideoFragment videoFragment = (VideoFragment) currentFragment;
             UserMessage videoMsg = new UserMessage(message, VIDEO_MESSAGE, false);
+            Log.i("WTF", "byte = " + message.getData() + " /// length = " + message.getData().length);
             videoMsg.setVideoPath(Utils.saveFile(message.getData()));
             DisplayedMessage videoDisplayedMessage = new DisplayedMessage(Hype.getHostInstance(), videoMsg);
             HypeRepository.getRepository().addVideoMsg(videoDisplayedMessage);
@@ -231,8 +235,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeMessageSent(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
-        Log.i("TAG", "onHypeMessageSent");
-        Log.i("TAG", Float.toString(v));
+        Log.i("WTF", "sent " + v);
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
             if (v == 1.0) {
@@ -266,7 +269,6 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             }
 
         } else if (currentFragment instanceof VideoFragment) {
-            Log.i("WTF", "sent " + v);
             if (v == 1.0) {
                 final VideoFragment videoFragment = (VideoFragment) currentFragment;
                 UserMessage videoMsg = new UserMessage(new Message(messageInfo, videoFragment.getMessageData()), VIDEO_MESSAGE, true);
@@ -419,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @Override
     public String onHypeRequestAccessToken(int i) {
         Log.i("WTF", "onHypeRequestAccessToken: token = " + i);
-        return "558cc6d448bd5c647fea181813b636";
+        return "064e04e5ab0669db7eaa5561eb8dde";
     }
 
 
@@ -433,6 +435,8 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             }
         }
 
+
+
         return true;
     }
 
@@ -445,7 +449,8 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         setupAdapter();
                         Hype.setContext(mContext);
-                        Hype.setAppIdentifier("f0e3f9c5");
+                        Hype.setTransportType(TransportType.BLUETOOTH_CLASSIC|TransportType.BLUETOOTH_LOW_ENERGY|TransportType.WIFI_DIRECT|TransportType.WIFI_INFRA);
+                        Hype.setAppIdentifier("f0441ff3");
                         Log.i("WTF", "PERMISSION GRANTED: Hype.getState() = " + Hype.getState());
                     } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                         boolean shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -604,7 +609,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         switch (view.getId()) {
             case R.id.tv_start:
                 Log.i("WTF", "PRESS START: Hype.getState() = " + Hype.getState());
-                if (Hype.getState() != State.Running) {
+                if (Hype.getState() != State.Running || Hype.getState() == State.Idle) {
                     startHype();
                 }
                 break;
@@ -674,6 +679,8 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             mMainPager.setAdapter(adapter);
         }
     }
+
+
 
 
 }

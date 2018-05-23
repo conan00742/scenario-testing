@@ -98,8 +98,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoMessage
                 } else {
                     mTvUser.setText("> " + currentMessage.getInstance().getStringIdentifier() + ":");
                     mLlPlainTextRoot.setGravity(Gravity.START);
-                    mCvvMessage.setVideoURI(Uri.fromFile(new File(currentMessage.getUserMessage().getVideoPath())));
+//                    mCvvMessage.setVideoURI(Uri.fromFile(new File(currentMessage.getUserMessage().getVideoPath())));
+                    mCvvMessage.setVideoPath(currentMessage.getUserMessage().getVideoPath());
                 }
+
 
                 mCvvMessage.start();
 
@@ -108,4 +110,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoMessage
         }
 
     }
+
+
 }

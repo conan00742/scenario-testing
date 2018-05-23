@@ -115,8 +115,8 @@ public class VideoFragment extends Fragment {
                 Log.i("WTF", "path = " + videoPath);
 
                 try {
-                    messageData = convert(videoUri);
-                    Log.i("WTF", "message = " + messageData);
+                    messageData = convert(videoPath);
+                    Log.i("WTF", "message = " + messageData + " /// length = " + messageData.length);
                     for (int i = 0; i < HypeRepository.getRepository().getInstanceCount(); i++) {
                         Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
                         Hype.send(messageData, currentInstance);
@@ -129,6 +129,60 @@ public class VideoFragment extends Fragment {
         }
     }
 
+
+
+//    public String getPath(Uri uri) {
+//        String res = null;
+//        String[] proj = {MediaStore.Images.Media.DATA};
+//        Cursor cursor = getActivity().getContentResolver().query(uri, proj, null, null, null);
+//        if (cursor.moveToFirst()) {
+//            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//            res = cursor.getString(column_index);
+//        }
+//        cursor.close();
+//        return res;
+//    }
+//
+//
+//    public byte[] convert(Uri videoUri) throws IOException {
+//
+////        InputStream inputStream = getActivity().getContentResolver().openInputStream(videoUri);
+////        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+////
+////        // this is storage overwritten on each iteration with bytes
+////        int bufferSize = 1024;
+////        byte[] buffer = new byte[bufferSize];
+////
+////        // we need to know how may bytes were read to write them to the byteBuffer
+////        int len = 0;
+////        while ((len = inputStream.read(buffer)) != -1) {
+////            byteBuffer.write(buffer, 0, len);
+////        }
+////
+////        Log.i("WTF", "videoBytes[] = " + byteBuffer.toByteArray());
+////
+////        // and then we can return your byte array.
+////        return byteBuffer.toByteArray();
+//
+//
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        FileInputStream fis;
+//        try {
+//            fis = new FileInputStream(new File(videoUri.getPath()));
+//            byte[] buf = new byte[16384];
+//            int n;
+//            while (-1 != (n = fis.read(buf)))
+//                baos.write(buf, 0, n);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        byte[] bbytes = baos.toByteArray();
+//
+//
+//        Log.i("WTF", "videoBytes[] = " + bbytes.toString() + " /// length = " + bbytes.length);
+//
+//        return bbytes;
+//    }
 
 
     public String getPath(Uri uri) {
@@ -144,44 +198,19 @@ public class VideoFragment extends Fragment {
     }
 
 
-    public byte[] convert(Uri videoUri) throws IOException {
+    public byte[] convert(String path) throws IOException {
 
-//        InputStream inputStream = getActivity().getContentResolver().openInputStream(videoUri);
-//        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-//
-//        // this is storage overwritten on each iteration with bytes
-//        int bufferSize = 1024;
-//        byte[] buffer = new byte[bufferSize];
-//
-//        // we need to know how may bytes were read to write them to the byteBuffer
-//        int len = 0;
-//        while ((len = inputStream.read(buffer)) != -1) {
-//            byteBuffer.write(buffer, 0, len);
-//        }
-//
-//        Log.i("WTF", "videoBytes[] = " + byteBuffer.toByteArray());
-//
-//        // and then we can return your byte array.
-//        return byteBuffer.toByteArray();
+        FileInputStream fis = new FileInputStream(path);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] b = new byte[16 * 1024];
 
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        FileInputStream fis;
-        try {
-            fis = new FileInputStream(new File(videoUri.getPath()));
-            byte[] buf = new byte[1024];
-            int n;
-            while (-1 != (n = fis.read(buf)))
-                baos.write(buf, 0, n);
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (int readNum; (readNum = fis.read(b)) != -1;) {
+            bos.write(b, 0, readNum);
         }
-        byte[] bbytes = baos.toByteArray();
 
+        byte[] bytes = bos.toByteArray();
 
-        Log.i("WTF", "videoBytes[] = " + bbytes.toString());
-
-        return bbytes;
+        return bytes;
     }
 
 
