@@ -83,7 +83,7 @@ public class PlainTextAdapter extends RecyclerView.Adapter<PlainTextAdapter.Plai
                 }
 
 
-                mTvPlainTextMsg.setText(new String(currentItem.getUserMessage().getMessage().getData()));
+                mTvPlainTextMsg.setText(new String(currentItem.getUserMessage().getMessage()));
             }
         }
     }

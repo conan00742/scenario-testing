@@ -90,7 +90,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                 }
 
-                Glide.with(mInflater.getContext()).load(currentItem.getUserMessage().getMessage().getData()).into(mTvImageMsg);
+                Glide.with(mInflater.getContext()).load(currentItem.getUserMessage().getMessage()).into(mTvImageMsg);
 
             }
         }

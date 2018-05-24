@@ -10,14 +10,12 @@ import com.hypelabs.hype.Message;
 
 public class UserMessage {
 
-    private Message message;
-    private String msgType;
+    private byte[] message;
     private String videoPath;
     private boolean fromSender;
 
-    public UserMessage(Message message, String msgType, boolean fromSender) {
+    public UserMessage(byte[] message, boolean fromSender) {
         this.message = message;
-        this.msgType = msgType;
         this.fromSender = fromSender;
     }
 
@@ -29,13 +27,10 @@ public class UserMessage {
         this.videoPath = videoPath;
     }
 
-    public Message getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 
-    public String getMsgType() {
-        return msgType;
-    }
 
     public boolean isFromSender() {
         return fromSender;

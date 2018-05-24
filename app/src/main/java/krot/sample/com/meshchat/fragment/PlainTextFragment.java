@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.hypelabs.hype.Hype;
 import com.hypelabs.hype.Instance;
 
@@ -25,8 +24,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import krot.sample.com.meshchat.R;
-import krot.sample.com.meshchat.adapter.MessageAdapter;
 import krot.sample.com.meshchat.adapter.PlainTextAdapter;
+import krot.sample.com.meshchat.model.DisplayedMessage;
+import krot.sample.com.meshchat.model.UserMessage;
 import krot.sample.com.meshchat.repository.HypeRepository;
 import krot.sample.com.meshchat.widget.EventClearMessage;
 
@@ -102,8 +102,14 @@ public class PlainTextFragment extends Fragment {
         msgData = message.getBytes();
         for (int i = 0; i < HypeRepository.getRepository().getInstanceList().size(); i++) {
             Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
-            Hype.send(msgData, currentInstance);
+            Hype.send(msgData, currentInstance, true);
         }
+
+        UserMessage plainTextMsg = new UserMessage(msgData, true);
+        DisplayedMessage displayedPlainTextMsg = new DisplayedMessage(Hype.getHostInstance(), plainTextMsg);
+        HypeRepository.getRepository().getPlainTextMessageList().add(displayedPlainTextMsg);
+        mPlainTextAdapter.setDisplayedMessageList(HypeRepository.getRepository().getPlainTextMessageList());
+        mPlainTextAdapter.notifyDataSetChanged();
     }
 
     @Subscribe

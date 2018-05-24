@@ -34,6 +34,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import krot.sample.com.meshchat.R;
 import krot.sample.com.meshchat.adapter.VideoAdapter;
+import krot.sample.com.meshchat.model.DisplayedMessage;
+import krot.sample.com.meshchat.model.UserMessage;
 import krot.sample.com.meshchat.repository.HypeRepository;
 import krot.sample.com.meshchat.widget.EventClearMessage;
 
@@ -135,8 +137,15 @@ public class VideoFragment extends Fragment {
                     Log.i("WTF", "message = " + messageData + " /// length = " + messageData.length);
                     for (int i = 0; i < HypeRepository.getRepository().getInstanceCount(); i++) {
                         Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
-                        Hype.send(messageData, currentInstance);
+                        Hype.send(messageData, currentInstance, true);
                     }
+
+                    UserMessage videoMsg = new UserMessage(messageData, true);
+                    videoMsg.setVideoPath(videoPath);
+                    DisplayedMessage displayedVideoMsg = new DisplayedMessage(Hype.getHostInstance(), videoMsg);
+                    HypeRepository.getRepository().getVideoMessageList().add(displayedVideoMsg);
+                    videoAdapter.setDisplayedMessageList(HypeRepository.getRepository().getVideoMessageList());
+                    videoAdapter.notifyDataSetChanged();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
