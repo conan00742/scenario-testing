@@ -18,6 +18,9 @@ import com.bumptech.glide.Glide;
 import com.hypelabs.hype.Hype;
 import com.hypelabs.hype.Instance;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -25,6 +28,7 @@ import krot.sample.com.meshchat.R;
 import krot.sample.com.meshchat.adapter.MessageAdapter;
 import krot.sample.com.meshchat.adapter.PlainTextAdapter;
 import krot.sample.com.meshchat.repository.HypeRepository;
+import krot.sample.com.meshchat.widget.EventClearMessage;
 
 /**
  * Created by Krot on 5/13/18.
@@ -61,6 +65,17 @@ public class PlainTextFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
 
     private void setupMessageAdapter() {
         mPlainTextAdapter = new PlainTextAdapter(getActivity());
@@ -89,5 +104,11 @@ public class PlainTextFragment extends Fragment {
             Instance currentInstance = HypeRepository.getRepository().getInstanceList().get(i);
             Hype.send(msgData, currentInstance);
         }
+    }
+
+    @Subscribe
+    public void clearMessage(EventClearMessage eventClearMessage) {
+        mPlainTextAdapter.setDisplayedMessageList(HypeRepository.getRepository().getPlainTextMessageList());
+        mPlainTextAdapter.notifyDataSetChanged();
     }
 }

@@ -21,6 +21,9 @@ import android.widget.TextView;
 import com.hypelabs.hype.Hype;
 import com.hypelabs.hype.Instance;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +35,7 @@ import butterknife.OnClick;
 import krot.sample.com.meshchat.R;
 import krot.sample.com.meshchat.adapter.VideoAdapter;
 import krot.sample.com.meshchat.repository.HypeRepository;
+import krot.sample.com.meshchat.widget.EventClearMessage;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -59,6 +63,18 @@ public class VideoFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     public byte[] getMessageData() {
@@ -202,7 +218,7 @@ public class VideoFragment extends Fragment {
 
         FileInputStream fis = new FileInputStream(path);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] b = new byte[16 * 1024];
+        byte[] b = new byte[8 * 1024];
 
         for (int readNum; (readNum = fis.read(b)) != -1;) {
             bos.write(b, 0, readNum);
@@ -214,5 +230,10 @@ public class VideoFragment extends Fragment {
     }
 
 
+    @Subscribe
+    public void clearMessage(EventClearMessage eventClearMessage) {
+        videoAdapter.setDisplayedMessageList(HypeRepository.getRepository().getVideoMessageList());
+        videoAdapter.notifyDataSetChanged();
+    }
 
 }

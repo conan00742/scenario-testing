@@ -37,10 +37,8 @@
 
         <meta-data
             android:name="com.hypelabs.hype.realm"
-            android:value="f0441ff3"/>
+            android:value="dba64f37"/>
 
-        <meta-data android:name="fr.maxcom.libmedia.apiKey"
-            android:value="K8ks510aaKcx9LXS7wmStoPxLzGEOnZt/VWY8uhdUAtxB70gbProG2bDFxFTJmxxtzdvpBVN5l7xzLVppwiEeFsFOM1bLMXNpilqTOMoZFW9N2AWrjRoFqA+dlCuM2RM" />
     </application>
 
 </manifest>

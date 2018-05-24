@@ -25,6 +25,9 @@ import com.bumptech.glide.Glide;
 import com.hypelabs.hype.Hype;
 import com.hypelabs.hype.Instance;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,6 +44,7 @@ import krot.sample.com.meshchat.adapter.ImageAdapter;
 import krot.sample.com.meshchat.adapter.MessageAdapter;
 import krot.sample.com.meshchat.repository.HypeRepository;
 import krot.sample.com.meshchat.widget.CustomChatMessageImageView;
+import krot.sample.com.meshchat.widget.EventClearMessage;
 
 import static android.app.Activity.RESULT_OK;
 import static krot.sample.com.meshchat.MainActivity.PICTURE_MESSAGE;
@@ -84,6 +88,18 @@ public class ImageFragment extends Fragment {
         ButterKnife.bind(this, view);
         setupMessageAdapter();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     private void setupMessageAdapter() {
@@ -181,6 +197,12 @@ public class ImageFragment extends Fragment {
             e.printStackTrace();
         }
         return data;
+    }
+
+    @Subscribe
+    public void clearMessage(EventClearMessage eventClearMessage) {
+        mMessageAdapter.setDisplayedMessageList(HypeRepository.getRepository().getImageMessageList());
+        mMessageAdapter.notifyDataSetChanged();
     }
 
 }

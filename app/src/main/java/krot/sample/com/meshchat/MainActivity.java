@@ -44,6 +44,8 @@ import com.hypelabs.hype.StateObserver;
 import com.hypelabs.hype.TransportType;
 
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +62,7 @@ import krot.sample.com.meshchat.fragment.VideoFragment;
 import krot.sample.com.meshchat.model.DisplayedMessage;
 import krot.sample.com.meshchat.model.UserMessage;
 import krot.sample.com.meshchat.repository.HypeRepository;
+import krot.sample.com.meshchat.widget.EventClearMessage;
 
 public class MainActivity extends AppCompatActivity implements StateObserver, NetworkObserver, MessageObserver {
 
@@ -127,8 +130,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             //do something else
             setupAdapter();
             Hype.setContext(mContext);
-            Hype.setTransportType(TransportType.BLUETOOTH_CLASSIC|TransportType.BLUETOOTH_LOW_ENERGY|TransportType.WIFI_DIRECT|TransportType.WIFI_INFRA);
-            Hype.setAppIdentifier("f0441ff3");
+            Hype.setAppIdentifier("dba64f37");
         }
     }
 
@@ -158,9 +160,12 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i("WTF", "Hype.getState() = " + Hype.getState());
         stopHype();
+        Hype.removeMessageObserver(this);
+        Hype.removeNetworkObserver(this);
+        Hype.removeStateObserver(this);
     }
+
 
     //MESSAGE OBSERVER
     @Override
@@ -198,10 +203,8 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             });
 
         } else if (currentFragment instanceof VideoFragment) {
-            Log.i("WTF", "Received Video");
             final VideoFragment videoFragment = (VideoFragment) currentFragment;
             UserMessage videoMsg = new UserMessage(message, VIDEO_MESSAGE, false);
-            Log.i("WTF", "byte = " + message.getData() + " /// length = " + message.getData().length);
             videoMsg.setVideoPath(Utils.saveFile(message.getData()));
             DisplayedMessage videoDisplayedMessage = new DisplayedMessage(Hype.getHostInstance(), videoMsg);
             HypeRepository.getRepository().addVideoMsg(videoDisplayedMessage);
@@ -228,14 +231,13 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(mContext, "failed sending to " + instance.getStringIdentifier() + " /// reason = " + error.getReason() + " /// description = " + error.getDescription(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "failed sending to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     public void onHypeMessageSent(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
-        Log.i("WTF", "sent " + v);
         Fragment currentFragment = adapter.getFragmentList().get(mMainPager.getCurrentItem());
         if (currentFragment instanceof PlainTextFragment) {
             if (v == 1.0) {
@@ -290,8 +292,6 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeMessageDelivered(MessageInfo messageInfo, final Instance instance, float v, boolean b) {
-        Log.i("TAG", "onHypeMessageDelivered");
-        Log.i("TAG", Float.toString(v));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -303,21 +303,19 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     //NETWORK OBSERVER
     @Override
-    public void onHypeInstanceFound(Instance instance) {
-        Log.i("WTF", "found " + instance.getStringIdentifier());
+    public void onHypeInstanceFound(final Instance instance) {
         Hype.resolve(instance);
     }
 
     @Override
-    public void onHypeInstanceLost(Instance instance, Error error) {
-        Log.i("WTF", "lost " + instance.getStringIdentifier());
+    public void onHypeInstanceLost(final Instance instance, Error error) {
         if (HypeRepository.getRepository().isInstanceExisted(instance)) {
-            Log.i("WTF", "removed");
             HypeRepository.getRepository().removeInstance(instance);
             mAdapter.setInstanceList(HypeRepository.getRepository().getInstanceList());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Toast.makeText(mContext, "Lost: " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
                     mAdapter.notifyDataSetChanged();
                 }
             });
@@ -325,15 +323,14 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     }
 
     @Override
-    public void onHypeInstanceResolved(Instance instance) {
-        Log.i("WTF", "resolved " + instance.getStringIdentifier());
+    public void onHypeInstanceResolved(final Instance instance) {
         if (!HypeRepository.getRepository().isInstanceExisted(instance)) {
-            Log.i("WTF", "added");
             HypeRepository.getRepository().addInstance(instance);
             mAdapter.setInstanceList(HypeRepository.getRepository().getInstanceList());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Toast.makeText(mContext, "Found + Resolved: " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
                     mAdapter.notifyDataSetChanged();
                 }
             });
@@ -349,10 +346,10 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     //STATE OBSERVER
     @Override
     public void onHypeStart() {
-        Log.i("WTF", "onHypeStart");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Toast.makeText(mContext, "STARTED", Toast.LENGTH_SHORT).show();
                 if (mIvStatus != null) {
                     mIvStatus.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_online));
                 }
@@ -366,14 +363,11 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeStop(Error error) {
-        Log.i("WTF", "onHypeStop: error = " + error.getDescription());
-        HypeRepository.getRepository().getInstanceList().clear();
-        mAdapter.setInstanceList(HypeRepository.getRepository().getInstanceList());
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Toast.makeText(mContext, "STOPPED", Toast.LENGTH_SHORT).show();
                 mIvStatus.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_offline));
-                mAdapter.notifyDataSetChanged();
             }
         });
 
@@ -383,12 +377,10 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeFailedStarting(Error error) {
-        Log.i("WTF", "onHypeFailedStarting: error = " + error.getDescription());
     }
 
     @Override
     public void onHypeReady() {
-        Log.i("WTF", "onHypeReady");
     }
 
     @Override
@@ -397,7 +389,6 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         //1 Starting
         //2 Running
         //3 Stopping
-        Log.i("WTF", "state = " + Hype.getState());
 
         if (Hype.getState() == State.Stopping) {
             runOnUiThread(new Runnable() {
@@ -420,8 +411,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public String onHypeRequestAccessToken(int i) {
-        Log.i("WTF", "onHypeRequestAccessToken: token = " + i);
-        return "064e04e5ab0669db7eaa5561eb8dde";
+        return "1a5b7280a6c77f5e";
     }
 
 
@@ -435,8 +425,6 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             }
         }
 
-
-
         return true;
     }
 
@@ -449,9 +437,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         setupAdapter();
                         Hype.setContext(mContext);
-                        Hype.setTransportType(TransportType.BLUETOOTH_CLASSIC|TransportType.BLUETOOTH_LOW_ENERGY|TransportType.WIFI_DIRECT|TransportType.WIFI_INFRA);
-                        Hype.setAppIdentifier("f0441ff3");
-                        Log.i("WTF", "PERMISSION GRANTED: Hype.getState() = " + Hype.getState());
+                        Hype.setAppIdentifier("dba64f37");
                     } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                         boolean shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION);
                         if (shouldShowRationale) {
@@ -608,13 +594,9 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     public void handleEventClick(View view) {
         switch (view.getId()) {
             case R.id.tv_start:
-                Log.i("WTF", "PRESS START: Hype.getState() = " + Hype.getState());
-                if (Hype.getState() != State.Running || Hype.getState() == State.Idle) {
-                    startHype();
-                }
+                startHype();
                 break;
             case R.id.tv_stop:
-                Log.i("WTF", "PRESS STOP: Hype.getState() = " + Hype.getState());
                 if (Hype.getState() == State.Running) {
                     stopHype();
                 }
@@ -659,6 +641,14 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     private void stopHype() {
         Hype.stop();
+        HypeRepository.getRepository().getInstanceList().clear();
+        HypeRepository.getRepository().getPlainTextMessageList().clear();
+        HypeRepository.getRepository().getImageMessageList().clear();
+        HypeRepository.getRepository().getVideoMessageList().clear();
+
+        mAdapter.setInstanceList(HypeRepository.getRepository().getInstanceList());
+        mAdapter.notifyDataSetChanged();
+        EventBus.getDefault().post(new EventClearMessage());
     }
 
     private void setupTabsLayout() {
