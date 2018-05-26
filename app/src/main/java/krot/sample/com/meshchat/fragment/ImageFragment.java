@@ -182,7 +182,7 @@ public class ImageFragment extends Fragment {
 
 
     public byte[] convertImageToByte(Uri uri){
-        byte[] data = null;
+        byte[] data = new byte[10 * 1024];
         try {
             ContentResolver cr = getActivity().getBaseContext().getContentResolver();
             InputStream inputStream = cr.openInputStream(uri);

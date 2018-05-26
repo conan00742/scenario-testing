@@ -39,6 +39,7 @@ import com.hypelabs.hype.MessageObserver;
 import com.hypelabs.hype.NetworkObserver;
 import com.hypelabs.hype.State;
 import com.hypelabs.hype.StateObserver;
+import com.hypelabs.hype.TransportType;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
             //do something else
             setupAdapter();
             Hype.setContext(mContext);
-            Hype.setAppIdentifier("f0441ff3");
+            Hype.setAppIdentifier("8ecac7e8");
         }
     }
 
@@ -225,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(mContext, "failed sending to " + instance.getStringIdentifier(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "failed sending to " + instance.getStringIdentifier() + " - error = " + (error != null ? error.getDescription() : "don't know error"), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public void onHypeInstanceFailResolving(Instance instance, Error error) {
-
+        Log.i("WTF", "onHypeInstanceFailResolving");
     }
 
 
@@ -330,8 +331,14 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
     }
 
     @Override
-    public void onHypeFailedStarting(Error error) {
-        Log.i("WTF", "onHypeFailedStarting");
+    public void onHypeFailedStarting(final Error error) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(mContext, error != null ? error.getDescription() : "onHypeFailedStarting", Toast.LENGTH_SHORT).show();
+            }
+        });
+        Log.i("WTF", "onHypeFailedStarting: error = " + (error != null ? error.getDescription() : "don't know"));
     }
 
     @Override
@@ -366,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
 
     @Override
     public String onHypeRequestAccessToken(int i) {
-        return "064e04e5ab0669db7eaa5561eb8dde";
+        return "e8f5db56674256537f18c62f9846f7";
     }
 
 
@@ -392,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements StateObserver, Ne
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         setupAdapter();
                         Hype.setContext(mContext);
-                        Hype.setAppIdentifier("f0441ff3");
+                        Hype.setAppIdentifier("8ecac7e8");
                     } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                         boolean shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION);
                         if (shouldShowRationale) {
